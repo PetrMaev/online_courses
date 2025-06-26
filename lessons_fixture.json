@@ -1,0 +1,57 @@
+[
+{
+    "model": "materials.lesson",
+    "pk": 1,
+    "fields": {
+        "title": "Python-разработчик",
+        "description": "Урок по Python-разработчик",
+        "preview": "",
+        "course": 2,
+        "video_link": null
+    }
+},
+{
+    "model": "materials.lesson",
+    "pk": 3,
+    "fields": {
+        "title": "Java-разработчик",
+        "description": "Урок по Java-разработчик",
+        "preview": "",
+        "course": 2,
+        "video_link": null
+    }
+},
+{
+    "model": "materials.lesson",
+    "pk": 4,
+    "fields": {
+        "title": "С++ программирование",
+        "description": "Урок по C++",
+        "preview": "",
+        "course": 2,
+        "video_link": null
+    }
+},
+{
+    "model": "materials.lesson",
+    "pk": 5,
+    "fields": {
+        "title": "Графический дизайнер",
+        "description": "Урок по графическому дизайну",
+        "preview": "",
+        "course": 3,
+        "video_link": null
+    }
+},
+{
+    "model": "materials.lesson",
+    "pk": 6,
+    "fields": {
+        "title": "Адаптивный дизайнер",
+        "description": "Урок по созданию сайтов, которые корректно отображаются на различных устройствах",
+        "preview": "",
+        "course": 3,
+        "video_link": null
+    }
+}
+]
