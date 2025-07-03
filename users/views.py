@@ -3,6 +3,7 @@ from rest_framework import filters, generics
 from rest_framework.permissions import IsAuthenticated
 
 from users.models import CustomUser, Payments
+from users.permissions import IsUserOwner
 from users.serializers import CustomUserSerializer, PaymentsSerializer
 
 
@@ -30,12 +31,12 @@ class CustomUserListAPIView(generics.ListAPIView):
 class CustomUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserOwner]
 
 
 class CustomUserDestroyAPIView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserOwner]
 
 
 class PaymentsCreateAPIView(generics.CreateAPIView):
