@@ -13,7 +13,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         course = serializer.save(owner=self.request.user)
-        course.save()
 
     def get_permissions(self):
         if self.action == 'create':
@@ -26,7 +25,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(owner=self.request.user)
+        if self.request.user.groups.filter(name='Moderators').exists():
+            return queryset
+        else:
+            return queryset.filter(owner=self.request.user)
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -35,7 +37,6 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         lesson = serializer.save(owner=self.request.user)
-        lesson.save()
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -45,7 +46,10 @@ class LessonListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(owner=self.request.user)
+        if self.request.user.groups.filter(name='Moderators').exists():
+            return queryset
+        else:
+            return queryset.filter(owner=self.request.user)
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
