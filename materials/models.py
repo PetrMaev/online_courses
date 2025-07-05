@@ -11,6 +11,13 @@ class Course(models.Model):
         help_text="Загрузите изображение",
     )
     description = models.TextField(verbose_name="Описание")
+    owner = models.ForeignKey(
+        'users.CustomUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+    )
 
     def __str__(self):
         return self.title
@@ -32,6 +39,13 @@ class Lesson(models.Model):
     )
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons", verbose_name="Курс обучения")
     video_link = models.TextField(blank=True, null=True, verbose_name="Ссылка на видео")
+    owner = models.ForeignKey(
+        'users.CustomUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Владелец",
+    )
 
     def __str__(self):
         return self.title
