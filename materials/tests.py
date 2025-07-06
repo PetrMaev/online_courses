@@ -95,6 +95,7 @@ class LessonTestCase(APITestCase):
         )
 
     def test_lesson_list(self):
+        """ Тестирование вывода списка уроков. """
         url = reverse('materials:lesson_list')
 
         response = self.client.get(url)
@@ -205,6 +206,7 @@ class CourseTestCase(APITestCase):
         )
 
     def test_course_list(self):
+        """ Тестирование вывода списка курсов. """
         url = reverse('materials:courses-list')
 
         response = self.client.get(url)
