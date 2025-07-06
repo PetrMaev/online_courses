@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
-from materials.models import Course, Lesson
+from materials.models import Course, Lesson, Subscribe
+from materials.validators import VideoLinkValidator
 
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = "__all__"
+        validators = [VideoLinkValidator(field="video_link")]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -18,4 +20,13 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ("id", "title", "description", "lesson_count", "lessons",)
+        fields = ("id", "title", "description", "is_subscribe", "lesson_count", "lessons",)
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    course_count = serializers.SerializerMethodField()
+    courses = CourseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Subscribe
+        fields = ("id", "user", "course", "course_count", "courses",)
