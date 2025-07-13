@@ -1,8 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from materials.models import Course, Lesson
-from materials.serializers import CourseSerializer, LessonSerializer
+from materials.models import Course, Lesson, Subscribe
+from materials.paginators import CustomPagination
+from materials.serializers import CourseSerializer, LessonSerializer, SubscribeSerializer
 from users.permissions import IsModer, IsOwner
 
 
@@ -10,6 +13,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPagination
 
     def perform_create(self, serializer):
         course = serializer.save(owner=self.request.user)
@@ -43,6 +47,7 @@ class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwner | IsModer]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -67,3 +72,30 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwner | ~IsModer]
+
+
+# Подписка
+class SubscribeAPIView(generics.CreateAPIView):
+    serializer_class = SubscribeSerializer
+    queryset = Subscribe.objects.all()
+    permission_classes = [IsAuthenticated, IsOwner | IsModer]
+
+    def post(self, *args, **kwargs):
+        user = self.request.user
+        course_id = kwargs['pk']
+        course_item = get_object_or_404(Course, pk=course_id)
+
+        subs_item = Subscribe.objects.filter(user=user, course=course_item)
+
+        # Если подписка у пользователя на этот курс есть - удаляем ее
+        if subs_item.exists():
+            subs_item.delete()
+            subs_item.save()
+            message = 'подписка удалена'
+        # Если подписки у пользователя на этот курс нет - создаем ее
+        else:
+            course_item.is_subscribe = True
+            course_item.save()
+            message = 'подписка добавлена'
+        # Возвращаем ответ в API
+        return Response({"message": message})
