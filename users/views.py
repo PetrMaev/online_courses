@@ -5,8 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from users.models import CustomUser, Payments
 from users.permissions import IsUserOwner
 from users.serializers import CustomUserSerializer, PaymentsSerializer
+from users.services import create_stripe_course_product, create_stripe_price, create_stripe_session, \
+    create_stripe_lesson_product
 
 
+# Пользователь
 class CustomUserCreateAPIView(generics.CreateAPIView):
     serializer_class = CustomUserSerializer
 
@@ -39,9 +42,33 @@ class CustomUserDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsUserOwner]
 
 
-class PaymentsCreateAPIView(generics.CreateAPIView):
+# Платежи
+class PaymentsCourseCreateAPIView(generics.CreateAPIView):
     serializer_class = PaymentsSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        payments = serializer.save(user=self.request.user)
+        course_product = create_stripe_course_product(payments.paid_course.id)
+        price = create_stripe_price(payments.amount, course_product)
+        session_id, payment_link = create_stripe_session(price)
+        payments.session_id = session_id
+        payments.payment_link = payment_link
+        payments.save()
+
+
+class PaymentsLessonCreateAPIView(generics.CreateAPIView):
+    serializer_class = PaymentsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        payments = serializer.save(user=self.request.user)
+        lesson_product = create_stripe_lesson_product(payments.paid_lesson.id)
+        price = create_stripe_price(payments.amount, lesson_product)
+        session_id, payment_link = create_stripe_session(price)
+        payments.session_id = session_id
+        payments.payment_link = payment_link
+        payments.save()
 
 
 class PaymentsListAPIView(generics.ListAPIView):
