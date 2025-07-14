@@ -20,6 +20,13 @@ class Course(models.Model):
         verbose_name="Владелец",
     )
     is_subscribe = models.BooleanField(default=False, verbose_name="Подписка на курс активна\неактивна")
+    amount = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Стоимость",
+        help_text="Укажите стоимость",
+    )
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -54,6 +61,13 @@ class Lesson(models.Model):
         blank=True,
         verbose_name="Владелец",
     )
+    amount = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Стоимость",
+        help_text="Укажите стоимость",
+    )
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -77,7 +91,7 @@ class Subscribe(models.Model):
     )
 
     def __str__(self):
-        return Course.title
+        return self.course.title
 
     class Meta:
         verbose_name = "подписка"
