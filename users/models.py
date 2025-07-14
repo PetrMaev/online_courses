@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from materials.models import Course, Lesson
+from materials.models import Lesson
 
 
 class CustomUser(AbstractUser):
@@ -49,19 +49,42 @@ class Payments(models.Model):
         (TRANSFER, "Перевод"),
     ]
 
-    user = models.ForeignKey("CustomUser", on_delete=models.CASCADE, verbose_name="Пользователь")
-    date = models.DateField(verbose_name="Дата оплаты")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="Пользователь")
+    date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
     paid_course = models.ForeignKey(
-        "materials.Course", on_delete=models.CASCADE, verbose_name="Оплаченный курс"
+        "materials.Course",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name="Оплаченный курс"
     )
     paid_lesson = models.ForeignKey(
-        Lesson, on_delete=models.CASCADE, verbose_name="Оплаченный урок", related_name="lesson"
+        "materials.Lesson",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        verbose_name="Оплаченный урок",
+        related_name="lesson"
     )
-    amount = models.IntegerField(verbose_name="Сумма оплаты")
+    amount = models.PositiveIntegerField(verbose_name="Сумма оплаты")
     pay_method = models.CharField(max_length=15, choices=METHOD_CHOICES, verbose_name="Способ оплаты")
+    session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID сессии",
+        help_text="Укажите ID сессии",
+    )
+    payment_link = models.URLField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name="Ссылка на оплату",
+        help_text="Укажите ссылку на оплату",
+    )
 
     def __str__(self):
-        return f"{self.user} - {self.amount}"
+        return self.amount
 
     class Meta:
         verbose_name = "платеж"
