@@ -4,7 +4,8 @@ from users.apps import UsersConfig
 from users.views import (PaymentsCourseCreateAPIView, PaymentsDestroyAPIView, PaymentsListAPIView,
                          PaymentsRetrieveAPIView, PaymentsUpdateAPIView, CustomUserCreateAPIView, CustomUserListAPIView,
                          CustomUserRetrieveAPIView, CustomUserUpdateAPIView, CustomUserDestroyAPIView,
-                         PaymentsLessonCreateAPIView)
+                         PaymentsLessonCreateAPIView, PaymentsCourseCheckoutSessionAPIView,
+                         PaymentsLessonCheckoutSessionAPIView)
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -20,6 +21,8 @@ urlpatterns = [
     path("payments/lesson/create/", PaymentsLessonCreateAPIView.as_view(), name="payment_lesson_create"),
     path("payments/", PaymentsListAPIView.as_view(), name="payments_list"),
     path("payments/<int:pk>/", PaymentsRetrieveAPIView.as_view(), name="payment_detail"),
+    path("payments/course/<int:pk>/", PaymentsCourseCheckoutSessionAPIView.as_view(), name="payment_course_check"),
+    path("payments/lesson/<int:pk>/", PaymentsLessonCheckoutSessionAPIView.as_view(), name="payment_lesson_check"),
     path("payments/<int:pk>/edit/", PaymentsUpdateAPIView.as_view(), name="payment_edit"),
     path("payments/delete/<int:pk>/", PaymentsDestroyAPIView.as_view(), name="payment_delete"),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
