@@ -160,12 +160,10 @@ CELERY_TASK_TRACK_STARTED = True
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
-# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
 CELERY_BEAT_SCHEDULE = {
     'check_last_login_user': {
         'task': 'users.tasks.check_last_login_user',  # Путь к задаче
-        'schedule': timedelta(seconds=10),  # Расписание выполнения задачи
+        'schedule': timedelta(days=30),  # Расписание выполнения задачи
     },
 }
 
