@@ -28,6 +28,7 @@ class CustomUser(AbstractUser):
         verbose_name="Страна",
         help_text="Укажите свою страну",
     )
+    last_login = models.DateTimeField(blank=True, null=True, verbose_name="Дата последней авторизации")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
