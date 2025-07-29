@@ -38,17 +38,16 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             return queryset.filter(owner=self.request.user)
 
-    @action(detail=True, methods=('post',))
-    def update_courses(self, pk):
-        course = get_object_or_404(Course, pk=pk)
+    def update(self, request, *args, **kwargs):
+        course_id = kwargs['pk']
+        course = get_object_or_404(Course, pk=course_id)
         last_updated = course.updated_at
+        response = super().update(request, *args, **kwargs)
         course.refresh_from_db()
         if Subscribe.objects.filter(course=course.pk).exists() and timezone.now() - last_updated > timedelta(
-            hours=4):
-            for sub in course.subscriptions.all():
-                send_email_course_update.delay(course.title, sub.user.email)
-        serializer = self.get_serializer(course)
-        return Response(data=serializer.data)
+                hours=4):
+            send_email_course_update.delay(course_id=course_id)
+        return response
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
