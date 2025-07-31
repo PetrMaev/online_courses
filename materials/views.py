@@ -44,7 +44,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         last_updated = course.updated_at
         response = super().update(request, *args, **kwargs)
         course.refresh_from_db()
-        if Subscribe.objects.filter(course=course.pk).exists() and timezone.now() - last_updated > timedelta(
+        if course.subscriptions.exists() and timezone.now() - last_updated > timedelta(
                 hours=4):
             send_email_course_update.delay(course_id=course_id)
         return response
