@@ -33,6 +33,7 @@ class Course(models.Model):
         blank=True,
         verbose_name="ID курса на страйпе"
     )
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -93,12 +94,13 @@ class Subscribe(models.Model):
     user = models.ForeignKey(
         "users.CustomUser",
         on_delete=models.CASCADE,
+        related_name="subscriptions",
         verbose_name="Пользователь"
     )
     course = models.ForeignKey(
         "Course",
         on_delete=models.CASCADE,
-        related_name="courses",
+        related_name="subscriptions",
         verbose_name="Название курса"
     )
 

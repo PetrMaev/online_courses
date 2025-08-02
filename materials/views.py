@@ -1,11 +1,15 @@
+from datetime import timedelta
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from materials.models import Course, Lesson, Subscribe
 from materials.paginators import CustomPagination
 from materials.serializers import CourseSerializer, LessonSerializer, SubscribeSerializer
+from materials.tasks import send_email_course_update
 from users.permissions import IsModer, IsOwner
 
 
@@ -33,6 +37,17 @@ class CourseViewSet(viewsets.ModelViewSet):
             return queryset
         else:
             return queryset.filter(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        course_id = kwargs['pk']
+        course = get_object_or_404(Course, pk=course_id)
+        last_updated = course.updated_at
+        response = super().update(request, *args, **kwargs)
+        course.refresh_from_db()
+        if course.subscriptions.exists() and timezone.now() - last_updated > timedelta(
+                hours=4):
+            send_email_course_update.delay(course_id=course_id)
+        return response
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -96,6 +111,7 @@ class SubscribeAPIView(generics.CreateAPIView):
         else:
             course_item.is_subscribe = True
             course_item.save()
+            subscribe = Subscribe.objects.create(user=user, course=course_item)
             message = 'подписка добавлена'
         # Возвращаем ответ в API
         return Response({"message": message})
