@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.10'
 
 services:
   web:
@@ -34,7 +34,13 @@ services:
       retries: 5
 
   redis:
-    image: "redis-alpine"
+    image: redis
+    ports:
+      - "6379:6379"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
 
   celery:
     build: .
@@ -54,10 +60,11 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - redis
       - celery
 
 volumes:
-  redis_data:
   postgres_data:
-  static_volume:
+  redis_data:
+  celery_data:
+  celery_beat_data:
+  static_volumes:
